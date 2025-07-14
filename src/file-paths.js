@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const config = require('./config');
 
 let staticDir = '/';
 
@@ -7,7 +8,12 @@ exports.loadFilePathConfig = (config) => {
     staticDir = config['staticDir'];
 }
 
-exports.loadStaticFilePaths = (currPath, appPath, dirName=staticDir) => {
+exports.loadStaticFilePaths = async (currPath, appPath, dirName=staticDir) => {
+    const staticFilePaths = await this._loadStaticFilePaths(currPath, appPath, dirName);
+    config.setConfig('staticFilePaths', staticFilePaths);
+}
+
+exports._loadStaticFilePaths = (currPath, appPath, dirName=staticDir) => {
     return new Promise((resolve, reject) => {
         const staticFilePaths = [];
         fs.readdir(path.join(currPath, dirName), async (err, list) => {
@@ -23,7 +29,7 @@ exports.loadStaticFilePaths = (currPath, appPath, dirName=staticDir) => {
 
                     if(isDirectory){
                         try{
-                            const childStaticFilePaths = await this.loadStaticFilePaths(path.join(currPath, dirName), newAppPath, fileOrDirName);
+                            const childStaticFilePaths = await this._loadStaticFilePaths(path.join(currPath, dirName), newAppPath, fileOrDirName);
                             
                             staticFilePaths.push(...childStaticFilePaths);
                         }

@@ -21,3 +21,10 @@ exports.loadConfig = (configFilePath='static-config.json') => {
         })
     })
 }
+
+exports.setConfig = (key, value) => {
+    config[key] = value;
+    
+    filePaths.loadFilePathConfig(config);
+    fileServe.loadFileServeConfig(config);
+}
